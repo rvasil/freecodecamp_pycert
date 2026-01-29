@@ -11,10 +11,10 @@
 # - The function should return a list of solutions; each solution is itself a list of length n, where the element at index i is the column index (0-based) of the queen in row i.
 
 
-def are_diagonals_free(current: list, rowindex: int) -> bool:
-    """ Check if existing diagonals allow placing a queen at `rowindex` row in next column."""
-    for r in range(-1, -len(current) - 1, -1):
-        if abs(rowindex - current[r]) == -r:
+def diagonals_allow(current: list, nextindex: int) -> bool:
+    """Check if existing diagonals allow placing a queen at `nextindex` row in next column."""
+    for r in range(1, len(current) + 1, 1):
+        if abs(nextindex - current[-r]) == r:
             return False
     return True
 
@@ -25,10 +25,13 @@ def backtrack_n_queens(matrix_size: int, options: list, current: list, solutions
         solutions.append(current.copy())
         return
 
-    for x in range(matrix_size):
-        if x not in current and are_diagonals_free(current, x):
+    for x in options:
+        # x not in current - this is guaranteed by options removal for `next_options`
+        if diagonals_allow(current, x):
             current.append(x)
-            backtrack_n_queens(matrix_size, options, current, solutions)
+            next_options = options.copy()
+            next_options.remove(x)
+            backtrack_n_queens(matrix_size, next_options, current, solutions)
             current.pop()  # return to previous state
 
 
